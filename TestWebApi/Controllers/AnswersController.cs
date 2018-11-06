@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
@@ -9,7 +9,7 @@ using Newtonsoft.Json;
 
 namespace TestWebApi.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/[controller]/[action]")]
     [EnableCors("CorsPolicy")]
     [ApiController]
     public class AnswersController : ControllerBase
@@ -18,16 +18,16 @@ namespace TestWebApi.Controllers
         
         // GET api/values
         [HttpGet]
-        [ActionName("User")]
-        public new string User()
+        [ActionName("user")]
+        public ActionResult<User> Get()
         {
-            return JsonConvert.SerializeObject(new User { name = "test", token = "b45a9b26-58ca-4107-abdb-1b9439d97ce3" });
+            return new User { name = "Vimal Patel", token = "b45a9b26-58ca-4107-abdb-1b9439d97ce3" };
         }
 
 
-        [HttpPost]
-        [ActionName("Sort")]
-        public async Task<ActionResult<List<Product>>> Sort(string param)
+        [HttpGet]
+        [ActionName("sort")]
+        public async Task<ActionResult<List<Product>>> Sort(string sortOption)
         {
             var sortedProds = new List<Product>();
             HttpResponseMessage response = new HttpResponseMessage();
@@ -40,11 +40,10 @@ namespace TestWebApi.Controllers
             else {
                 return NotFound(MessageForStatusCode((int)response.StatusCode));
             }
-          
-
+        
             if (sortedProds.Count > 0)
             {
-                switch (param)
+                switch (sortOption)
                 {
                     case "Low":
                         sortedProds = sortedProds.OrderBy(p => p.Price).ToList();
@@ -54,11 +53,11 @@ namespace TestWebApi.Controllers
                         sortedProds = sortedProds.OrderByDescending(p => p.Price).ToList();
                         break;
                     case "Ascending":
-                        sortedProds = sortedProds.OrderBy(p => p.Price).ToList();
+                        sortedProds = sortedProds.OrderBy(p => p.Name).ToList();
                         break;
 
                     case "Descending":
-                        sortedProds = sortedProds.OrderByDescending(p => p.Price).ToList();
+                        sortedProds = sortedProds.OrderByDescending(p => p.Name).ToList();
                         break;
 
                     case "Recommended":
@@ -79,7 +78,7 @@ namespace TestWebApi.Controllers
 
         [HttpPost]
         [ActionName("trolleyCalculator")]
-        public async Task<ActionResult<int>> TrolleyCalculator() {
+        public async Task<ActionResult<int>> Post() {
             var trolley = new Trolley();
             HttpResponseMessage response = new HttpResponseMessage();
             int lowestTotal = 0;
